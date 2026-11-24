@@ -13,32 +13,45 @@
    - Never substitute a local sample for a live PR. If the GitHub MCP server is
      not connected, stop and say so.
 
-3. Route the changed files by type and load only the conventions that are needed.
-   - A `.go` file whose basename does not end in `_test.go`: load `app-conventions`.
-   - A file whose basename ends in `_test.go`: load `test-conventions`.
-   - Any other file: load no convention skill.
-   - If the request names a file scope, review only the files in that scope.
-   - Say which convention skills you loaded and for which files.
+3. Set the review scope. List the changed files. If the request names a file
+   scope, keep only those files. Keep the complete diff for the files in scope.
 
-4. Review each file in scope. Apply the review criteria in `AGENTS.md`, including its security rules, the
-   conventions loaded for that file, and `fixture-policy.md`. Report only issues
-   you can point to in the diff, with the file and the line or hunk. Do not apply
-   application conventions to test files or test conventions to application files.
+4. Delegate the style review to the `style-reviewer` subagent. Pass it the
+   target, the head SHA, the repository root, the review scope, the list of
+   changed files and the complete in-scope diff. Wait for its result.
 
-5. Check the findings once more against the diff. Drop any finding you cannot
-   point to, and merge duplicates. Make at most two review passes in total.
+5. Delegate the security review to the `security-reviewer` subagent with the
+   same input. Wait for its result.
 
-6. Consolidate one review in the output format from `AGENTS.md`: a section for
-   each file in scope, `No findings.` for a clean file, and a closing `## Summary`
-   with the counts by severity and the highest severity.
+6. Delegate the architecture review to the `architecture-reviewer` subagent with
+   the same input. Wait for its result.
 
-7. Present the review. Name the target: the PR number, the repository and the
+7. Merge the three results into one review in the output format from `AGENTS.md`.
+   - Keep a section for each file in scope, and write `No findings.` for a file
+     that no reviewer flagged.
+   - Keep the severity each reviewer gave, and say which reviewer reported the
+     finding: style, security or architecture.
+   - If two reviewers report the same line and issue, keep one finding with the
+     higher severity. A hardcoded credential is reported once, as a security
+     finding.
+   - Drop any finding you cannot point to in the diff.
+   - Never reproduce a credential value. Follow `fixture-policy.md`.
+   - End with `## Summary`: the counts by severity and the highest severity.
+
+8. Present the review. Name the target: the PR number, the repository and the
    head SHA, or the local file. End with
    "Post this review? Reply yes or post to confirm." Do not post.
 
-8. Follow the publish gate in `AGENTS.md`. Post only after an exact `yes` or
+9. Follow the publish gate in `AGENTS.md`. Post only after an exact `yes` or
    `post`, and only with a write tool that the connection provides. Never approve,
    merge or close the PR.
 
-Do the whole review in the main agent. Do not delegate to subagents in this
-practice.
+Delegation rules:
+- Run the subagents one at a time, in the order style, security, architecture.
+  Wait for each result before starting the next.
+- Use the real named subagents. Do not do their review yourself. If a named
+  subagent is unavailable, report the missing subagent and stop instead of
+  simulating its review.
+- One delegation round is one review pass. Make at most two passes in total.
+- Subagents never ask the user anything and never post. The confirmation gate
+  stays in the main agent.
