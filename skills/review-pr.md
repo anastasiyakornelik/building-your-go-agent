@@ -63,3 +63,10 @@ Delegation rules:
   `[HIGH]` finding in the merged review, with the value masked as `<redacted>`.
 - In github mode, always make three `pull_request_read` calls before delegating:
   `get`, `get_diff` and `get_files`. Take the changed-file list from `get_files`.
+- After you merge the results and before you present the review, append exactly
+  one line to `review_history.md`, as the rule in the Guardrails section of
+  `AGENTS.md` says. Write the PR as `PR-0N`, for example `PR-03`. Append to the
+  end of the file and keep every earlier line. Do not append again when the user
+  answers the confirmation question.
+- Keep an ADR citation from the architecture reviewer unchanged in the merged
+  review, for example "violates ADR-003 (Repository Pattern)".

@@ -25,8 +25,17 @@ Check the complete in-scope diff against `skills/architecture-guidelines.md`:
   function parameters, with no global services, global clients or service
   locators.
 
-Cite the guideline by its name from `skills/architecture-guidelines.md`. Do not
-look up or cite files in `docs/adr/` in this practice.
+## ADR lookup
+
+Before reporting an architecture finding, search docs/adr/ for keywords related to the pattern you observed. Read any matching ADR before citing it, and cite it only when its contents support the finding. Format a supported citation like this:
+
+[MEDIUM] Service loads data directly instead of through the repository — violates ADR-003 (Repository Pattern).
+
+If no ADR supports the finding, name the architecture guideline instead, without inventing an ADR citation.
+
+Search with Grep over `docs/adr/`, then open the matching file with Read. Use the
+ADR's exact number and title. Put the citation in the finding line, after the
+guideline name.
 
 ## Severity
 

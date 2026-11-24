@@ -32,6 +32,11 @@ team's Go conventions and return style findings to the orchestrator.
   security reviewer, and never reproduce a credential value.
 - Report only issues you can point to in the diff. Do not speculate.
 
+- A doc comment is required on an exported top-level declaration: a type, a
+  function, a method with a receiver, a constant or a variable. Methods listed
+  inside an interface declaration and fields inside a struct do not need their
+  own doc comment. Do not report them when the interface or struct has one.
+
 ## Severity
 
 - `[MEDIUM]` - a discarded or unchecked error, a dropped context, a test that uses

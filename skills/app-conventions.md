@@ -41,6 +41,11 @@ Severity:
 - `[MEDIUM]` - a discarded or unchecked error, a dropped or replaced context.
 - `[LOW]` - naming, initialisms, doc comments, formatting, error string style.
 
+Doc comment scope: a doc comment is required on an exported top-level
+declaration (type, function, method with a receiver, constant, variable). Methods
+listed inside an interface declaration and fields inside a struct do not need
+their own doc comment.
+
 ## Template
 
 Compliant:
