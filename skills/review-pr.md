@@ -1,5 +1,7 @@
 ## Steps
 
+If the request names a local diff file, review that file instead of fetching the PR from GitHub. Don't call the GitHub MCP server. Label the review as local, with the file path as the target. A local file has no PR to post to, so the confirmation question is only a simulation: never post anything.
+
 1. Resolve the target. Take the PR number from the argument. If it is missing or
    is not one of the numbers in `review-target.json`, stop and ask for it. Read
    `review-target.json` for the mode, owner, repository and PR number mapping.
