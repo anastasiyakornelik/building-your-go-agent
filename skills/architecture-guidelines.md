@@ -1,39 +1,47 @@
 ## Rules
 
-These rules summarize the four team ADRs in `docs/adr/`.
+These are this team's decisions, not general Go rules. They summarize the four
+ADRs in `docs/adr/`.
 
-Layered architecture (ADR-001) - `[MEDIUM]`:
-- Handlers and `cmd/` entrypoints parse input and format output.
-- Services contain the business logic.
-- Entrypoints do not query persistence directly.
+### Layered architecture
 
-Configuration (ADR-002) - `[LOW]`:
-- Runtime configuration and secrets are loaded centrally in `internal/config` or
-  the composition root and injected into constructors.
-- Services do not call `os.Getenv` ad hoc.
+- Handlers and `cmd/` entry points parse input and format output.
+- Services contain business logic.
+- Entry points do not query storage directly.
+
+### Configuration
+
+- Runtime configuration and secrets are loaded centrally, in `internal/config` or
+  the composition root, and passed through constructors.
+- Services do not call `os.Getenv` and do not contain credentials.
 - Ordinary algorithm constants are allowed.
-- A hardcoded credential is a `[HIGH]` security finding that belongs to the
-  security reviewer. Do not report it a second time as an architecture finding.
 
-Repository pattern (ADR-003) - `[MEDIUM]`:
-- Services obtain data through small repository interfaces, normally declared
-  near the consumer.
-- Concrete adapters in `internal/repository` may depend on `internal/api` or
-  `database/sql`.
-- Services must not import or call API clients or SQL directly.
-- Repository bypass is `[MEDIUM]`, even when the client is injected. Injecting a
-  client satisfies dependency injection but still bypasses the repository.
-- Tests may wire adapters to `httptest` servers.
+### Repository pattern
 
-Dependency injection (ADR-004) - `[MEDIUM]`:
-- Dependencies are passed through `NewXxx` constructors or function parameters.
-- Small interfaces are used where consumers need substitution.
-- No global mutable service instances, global clients or `ServiceLocator`
-  registries.
+- Services get data through small repository interfaces, normally declared near
+  the consumer.
+- Only adapters in `internal/repository` may use `internal/api` or `database/sql`.
+- Services do not import or call API clients or SQL directly.
+
+### Dependency injection
+
+- Dependencies come through `NewXxx` constructors or function parameters.
+- No global services, global clients or service locators.
 - Tests provide fakes or local adapters.
 
-Severity:
-- `[HIGH]` - only a demonstrably serious violation.
-- `[MEDIUM]` - repository bypass, a layering violation, global mutable
-  dependencies or a service locator.
-- `[LOW]` - a minor issue, such as an ad hoc `os.Getenv` call in a service.
+### Clarifications
+
+- Injecting a concrete API client into a service follows dependency injection but
+  still bypasses the repository layer. Report it as a Repository pattern
+  violation.
+- Tests may connect adapters to a local `httptest.Server`.
+- A hardcoded credential is mainly a security finding. It is reported once, as
+  `[HIGH]` security with a reference to the Configuration guideline, and not
+  again as a separate architecture finding.
+
+### Severity
+
+- `[MEDIUM]` - a normal violation of any of the four decisions, including a
+  repository bypass with an injected client.
+- `[HIGH]` - only when the changed code shows an additional high-impact
+  consequence.

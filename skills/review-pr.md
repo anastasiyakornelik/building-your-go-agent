@@ -55,3 +55,11 @@ Delegation rules:
 - One delegation round is one review pass. Make at most two passes in total.
 - Subagents never ask the user anything and never post. The confirmation gate
   stays in the main agent.
+- Pass every subagent the same complete in-scope diff and the same changed-file
+  list, including test files.
+- If any subagent fails or returns no usable result, stop. Report an incomplete
+  review, name the subagent that failed, and do not merge or offer to post.
+- A hardcoded credential and the matching Configuration guideline become one
+  `[HIGH]` finding in the merged review, with the value masked as `<redacted>`.
+- In github mode, always make three `pull_request_read` calls before delegating:
+  `get`, `get_diff` and `get_files`. Take the changed-file list from `get_files`.
